@@ -2,41 +2,22 @@ NAME			= inception
 
 LST_SRCS		= docker-compose.yml
 SRCS_DIR		= srcs
-OBJS_DIR		= objs
-SRCS			= $(addprefix $(SRCS_DIR)/,$(LST_SRCS))
-OBJS			= $(LST_SRCS:%.cpp=$(OBJS_DIR)/%.o)
-CXXC			= clang++
-FLAGS			= -Wall -Wextra -Werror -std=c++98 -pedantic-errors
-CXXFLAGS		= $(FLAGS) -Iinc
 RM				= rm -rf
 MKDIR			= mkdir -p
-INC			= $(shell find ./inc -type f -name "*.hpp")
 
-all:			$(NAME)
-
-$(OBJS_DIR):
-				$(MKDIR) $@
-
-$(NAME):		$(OBJS_DIR) $(OBJS)
-				$(CXXC) $(CXXFLAGS) $(OBJS) -o $(NAME)
+$(NAME):
+				docker run --name some-nginx -d -p 8080:80 some-content-nginx
 				echo "$(BOLD)$(GREEN)$(ERASE)--> $(NAME) generated <--$(END)"
 
-$(OBJS_DIR)/%.o:$(SRCS_DIR)/%.cpp	$(INC)
-				$(MKDIR) $(dir $@)
-				$(CXXC) $(CXXFLAGS) -o $@ -c $<
-				printf "$(ERASE)--> [$(CYAN)$(BOLD)$<$(END)] <-- "
-
 clean:
-				$(RM) $(OBJS_DIR)
 
 fclean:		clean
-				$(RM) $(NAME)
 				printf "$(ERASE)$(YELLOW)$(BOLD)--> $(NAME) CLEAN <--$(END)\n"
 
 re:				fclean all
 
 .PHONY: 		clean fclean all re
-.SILENT:		clean fclean all re $(OBJS) $(NAME) $(OBJS_DIR)
+.SILENT:		clean fclean all re $(NAME)
 
 ERASE		= \033[2K\r
 GREY		= \033[30m
