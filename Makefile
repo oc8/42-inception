@@ -1,23 +1,64 @@
-NAME			= inception
+# NAME			= inception
+# PATH			= --project-directory srcs/
+# # SRCS_DIR		= srcs
+# # RM				= rm -rf
+# # MKDIR			= mkdir -p
 
-LST_SRCS		= docker-compose.yml
-SRCS_DIR		= srcs
-RM				= rm -rf
-MKDIR			= mkdir -p
+# $(NAME):
+# 		sudo docker-compose $(PATH) up -d
+# 		# echo "$(BOLD)$(GREEN)$(ERASE)--> $(NAME) generated <--$(END)"
 
-$(NAME):
-				docker run --name some-nginx -d -p 8080:80 some-content-nginx
-				echo "$(BOLD)$(GREEN)$(ERASE)--> $(NAME) generated <--$(END)"
+# all:	$(NAME)
+
+# build:
+# 		sudo docker-compose $(PATH) up -d --build
+# 		# echo "$(BOLD)$(GREEN)$(ERASE)--> $(NAME) build <--$(END)"
+
+# test:
+# 		echo couou
+
+# clean:
+# 		sudo docker-compose $(PATH) down
+
+# fclean:
+# 		sudo docker-compose $(PATH) down
+# 		sudo docker-compose $(PATH) rm -fsv
+# 		sudo docker rmi -f inception_wordpress inception_db inception_nginx
+# # printf "$(ERASE)$(YELLOW)$(BOLD)--> $(NAME) CLEAN <--$(END)\n"
+
+# # re:				fclean all
+
+# .PHONY: 		clean fclean all re $(NAME) build
+# # .SILENT:		clean fclean all re $(NAME) build
+
+
+PATH_DOCKER = -f srcs/docker-compose.yml
+VOLUMES_HOST = /home/odroz-ba/data/html /home/odroz-ba/data/mysql
+
+all: $(VOLUMES_HOST)
+	docker-compose $(PATH_DOCKER) up -d
+
+$(VOLUMES_HOST):
+	sudo mkdir -p $@
+
+build:
+	sudo docker-compose $(PATH_DOCKER) up -d --build
 
 clean:
+	sudo docker-compose $(PATH_DOCKER) down
 
-fclean:		clean
-				printf "$(ERASE)$(YELLOW)$(BOLD)--> $(NAME) CLEAN <--$(END)\n"
+fclean: clean
+	sudo docker-compose $(PATH_DOCKER) rm -fsv
+	sudo docker rmi -f inception_wordpress inception_sql inception_nginx
+	sudo rm -rf $(VOLUMES_HOST)
 
-re:				fclean all
+re: fclean all
 
-.PHONY: 		clean fclean all re
-.SILENT:		clean fclean all re $(NAME)
+emptycache:
+	sudo docker system prune -a
+
+.PHONY: 	all build clean fclean re emptycache $(NAME)
+# .SILENT:	clean fclean all re $(NAME) build emptycache
 
 ERASE		= \033[2K\r
 GREY		= \033[30m
