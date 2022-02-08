@@ -1,35 +1,41 @@
 version: '3'
 services:
-  # mariadb:
-    # container_name: inception_sql
-  #   image: mariadb
-  #   build:
-  #     context: ./requirements/mariadb
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - /home/odroz-ba/data/mysql:/var/lib/mysql
-  #     # - type: volume
-  #     #   source: /home/odroz-ba/data/mysql
-  #     #   target: /var/lib/mysql
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: mysql_root_pass
-  #     MYSQL_DATABASE: db_name
-  #     MYSQL_USER: user_name
-  #     MYSQL_PASSWORD: user_pass
-  #   restart: always
-  # wordpress:
-    # container_name: inception_wordpress
-  #   image: wordpress:php7.3-fpm-alpine
-  #   build:
-  #     context: ./requirements/wordpress
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - /home/odroz-ba/data/html:/var/www/html
-  #     # - type: volume
-  #     #   source: /data/html
-  #     #   target: /var/www/html
-  #   depends_on:
-  #     - mariadb
+
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    image: inception_mariadb
+    container_name: mariadb
+    volumes:
+      - data:/var/lib/mysql
+    env_file:
+      - ".env"
+      # - type: volume
+      #   source: /home/odroz-ba/data/mysql
+      #   target: /var/lib/mysql
+    # environment:
+    #   MYSQL_ROOT_PASSWORD: mysql_root_pass
+    #   MYSQL_DATABASE: db_name
+    #   MYSQL_USER: user_name
+    #   MYSQL_PASSWORD: user_pass
+    # restart: always
+
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    container_name: wordpress
+    image: inception_wordpress
+    volumes:
+      - html:/var/www/html
+    env_file:
+      - ".env"
+      # - type: volume
+      #   source: /data/html
+      #   target: /var/www/html
+    depends_on:
+      - mariadb
   #   environment:
   #     WORDPRESS_DB_HOST: mysql
   #     MYSQL_ROOT_PASSWORD: mysql_root_pass
@@ -40,24 +46,38 @@ services:
   #   links:
   #     - mariadb
   #   restart: always
+  #   image: wordpress:php7.3-fpm-alpine
   nginx:
-    container_name: inception_nginx
     build:
       context: ./requirements/nginx
       dockerfile: Dockerfile
-    # volumes:
-      # - /home/odroz-ba/data/html:/var/www/html
-      # - /var/www/html:/var/www/html
+    container_name: nginx
+    image: inception_nginx
+    volumes:
+      - html:/var/www/html
+    env_file:
+      - ".env"
       # - type: volume
       #   source: /home/odroz-ba/data/html
       #   rarget: /var/www/html
     ports:
-      # - 8080:80
       - 443:443
-    # links:
-    #   - wordpress
+      # - 8080:80
     # image: nginx:alpine
 
+volumes:
+  html:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/odroz-ba/data/html
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/odroz-ba/data/mysql
 # version: '3'
 
 # services:

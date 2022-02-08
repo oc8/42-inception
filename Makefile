@@ -43,16 +43,39 @@ $(VOLUMES_HOST):
 
 build:
 	sudo docker-compose $(PATH_DOCKER) up -d --build
+# sudo docker-compose $(PATH_DOCKER) up --build
 
 clean:
-	sudo docker-compose $(PATH_DOCKER) down
+	sudo docker-compose $(PATH_DOCKER) down --remove-orphans
+	docker images prune
 
 fclean: clean
-	sudo docker-compose $(PATH_DOCKER) rm -fsv
-	sudo docker rmi -f inception_wordpress inception_sql inception_nginx
-	sudo rm -rf $(VOLUMES_HOST)
+	docker volume rm $$(docker volume ls -q)
+	sudo rm -rf /home/odroz-ba/data
+	docker network prune --force
+	docker rmi inception_nginx inception_mariadb inception_wordpress
+
+status:
+	@echo "\033[32mCONTAINERS\033[0m"
+	@docker ps -a
+	@echo "\n\033[32mIMAGES\033[0m"
+	@docker images
+	@echo "\n\033[32mVOLUMES\033[0m"
+	@docker volume ls
+	@echo "\n\033[32mNETWORKS\033[0m"
+	@docker network ls
 
 re: fclean all
+
+nt:
+	docker container exec -ti nginx bash
+
+mt:
+	docker container exec -ti mariadb bash
+
+test:
+	docker build -t image_test /home/odroz-ba/Bureau/42-inception/srcs/requirements/mariadb/.
+	docker run -ti --rm --name test image_test bash
 
 emptycache:
 	sudo docker system prune -a
