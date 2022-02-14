@@ -14,11 +14,11 @@ services:
       # - type: volume
       #   source: /home/odroz-ba/data/mysql
       #   target: /var/lib/mysql
-    # environment:
-    #   MYSQL_ROOT_PASSWORD: mysql_root_pass
-    #   MYSQL_DATABASE: db_name
-    #   MYSQL_USER: user_name
-    #   MYSQL_PASSWORD: user_pass
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql_root_pass
+      MYSQL_DATABASE: db_name
+      MYSQL_USER: user_name
+      MYSQL_PASSWORD: user_pass
     # restart: always
 
   wordpress:
@@ -36,17 +36,17 @@ services:
       #   target: /var/www/html
     depends_on:
       - mariadb
-  #   environment:
-  #     WORDPRESS_DB_HOST: mysql
-  #     MYSQL_ROOT_PASSWORD: mysql_root_pass
-  #     WORDPRESS_DB_NAME: db_name
-  #     WORDPRESS_DB_USER: user_name
-  #     WORDPRESS_DB_PASSWORD: user_pass
-  #     WORDPRESS_TABLE_PREFIX: wp_
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      MYSQL_ROOT_PASSWORD: mysql_root_pass
+      WORDPRESS_DB_NAME: db_name
+      WORDPRESS_DB_USER: user_name
+      WORDPRESS_DB_PASSWORD: user_pass
+      WORDPRESS_TABLE_PREFIX: wp_
   #   links:
   #     - mariadb
   #   restart: always
-  #   image: wordpress:php7.3-fpm-alpine
+    # image: wordpress:php7.3-fpm-alpine
   nginx:
     build:
       context: ./requirements/nginx
@@ -78,48 +78,3 @@ volumes:
       type: none
       o: bind
       device: /home/odroz-ba/data/mysql
-# version: '3'
-
-# services:
-#   version: '3'
-# services:
-#   mysql:
-#     image: mariadb
-#     volumes:
-#       - /data/mysql:/var/lib/mysql
-#     environment:
-#       MYSQL_ROOT_PASSWORD: mysql_root_pass
-#       MYSQL_DATABASE: db_name
-#       MYSQL_USER: user_name
-#       MYSQL_PASSWORD: user_pass
-#     restart: always
-#   wordpress:
-#     depends_on:
-#       - db
-#     image: wordpress:latest
-#     build: ./requirements/wordpress/
-#     ports:
-#       - "8000:80"
-#     restart: always
-#     environment:
-#       WORDPRESS_DB_HOST: db:3306
-#       WORDPRESS_DB_USER: wordpress
-#       WORDPRESS_DB_PASSWORD: wordpress
-#       WORDPRESS_DB_NAME: wordpress
-#   web:
-#     image: nginx
-#     # container_name: nginx
-#     restart: always
-#     build: ./requirements/nginx/
-#     volumes:
-#     - ./templates:/etc/nginx/templates
-#     ports:
-#     - "8080:80"
-#     #  - "8080:443"
-#     environment:
-#     - NGINX_HOST=foobar.com
-#     - NGINX_PORT=80
-#     # entrypoint: ps aux
-
-# volumes:
-#   db_data: {}

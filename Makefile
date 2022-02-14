@@ -41,7 +41,7 @@ all: $(VOLUMES_HOST)
 $(VOLUMES_HOST):
 	sudo mkdir -p $@
 
-build:
+build: $(VOLUMES_HOST)
 	sudo docker-compose $(PATH_DOCKER) up -d --build
 # sudo docker-compose $(PATH_DOCKER) up --build
 
@@ -72,7 +72,8 @@ nt:
 
 mt:
 	docker container exec -ti mariadb bash
-
+wt:
+	docker container exec -ti wordpress bash
 test:
 	docker build -t image_test /home/odroz-ba/Bureau/42-inception/srcs/requirements/mariadb/.
 	docker run -ti --rm --name test image_test bash
