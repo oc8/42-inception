@@ -32,6 +32,7 @@
 # # .SILENT:		clean fclean all re $(NAME) build
 
 
+# PATH_DOCKER = --project-directory srcs/
 PATH_DOCKER = -f srcs/docker-compose.yml
 VOLUMES_HOST = /home/odroz-ba/data/html /home/odroz-ba/data/mysql
 
@@ -40,6 +41,7 @@ all: $(VOLUMES_HOST)
 
 $(VOLUMES_HOST):
 	sudo mkdir -p $@
+# sudo mkdir -p /home/odroz-ba/data/html/wordpress
 
 build: $(VOLUMES_HOST)
 	sudo docker-compose $(PATH_DOCKER) up -d --build
@@ -65,6 +67,9 @@ status:
 	@echo "\n\033[32mNETWORKS\033[0m"
 	@docker network ls
 
+log:
+	docker-compose -fsrcs/docker-compose.yml logs -f --tail 5
+
 re: fclean all
 
 nt:
@@ -81,7 +86,7 @@ test:
 emptycache:
 	sudo docker system prune -a
 
-.PHONY: 	all build clean fclean re emptycache $(NAME)
+.PHONY: 	all build clean fclean re emptycache nt mt wt test status log $(NAME)
 # .SILENT:	clean fclean all re $(NAME) build emptycache
 
 ERASE		= \033[2K\r

@@ -19,9 +19,8 @@ COPY tools/php-fpm.conf /etc/php7/php-fpm.conf
 # COPY ./tools/wp-config.php ./
 
 EXPOSE 9000
-run chmod -x install.sh
-run ls
+RUN chmod -x install.sh
 
-# CMD ["/bin/bash", "/install.sh"]
+CMD ["/bin/bash", "/install.sh"]
 # CMD ["/bin/bash", "--init-file", "/install.sh"]
-CMD ["tail", "-f"]
+# CMD ["tail", "-f"]

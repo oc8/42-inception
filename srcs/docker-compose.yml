@@ -5,21 +5,19 @@ services:
     build:
       context: ./requirements/mariadb
       dockerfile: Dockerfile
+      args:
+        DB_PASS: "${DB_PASS}"
+        DB_NAME: "${DB_NAME}"
+        DB_USER: "${DB_USER}"
     image: inception_mariadb
     container_name: mariadb
     volumes:
       - data:/var/lib/mysql
     env_file:
       - ".env"
-      # - type: volume
-      #   source: /home/odroz-ba/data/mysql
-      #   target: /var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: mysql_root_pass
-      MYSQL_DATABASE: db_name
-      MYSQL_USER: user_name
-      MYSQL_PASSWORD: user_pass
-    # restart: always
+    networks:
+      - backend
+    restart: always
 
   wordpress:
     build:
@@ -31,22 +29,13 @@ services:
       - html:/var/www/html
     env_file:
       - ".env"
-      # - type: volume
-      #   source: /data/html
-      #   target: /var/www/html
     depends_on:
       - mariadb
-    environment:
-      WORDPRESS_DB_HOST: mysql
-      MYSQL_ROOT_PASSWORD: mysql_root_pass
-      WORDPRESS_DB_NAME: db_name
-      WORDPRESS_DB_USER: user_name
-      WORDPRESS_DB_PASSWORD: user_pass
-      WORDPRESS_TABLE_PREFIX: wp_
-  #   links:
-  #     - mariadb
-  #   restart: always
-    # image: wordpress:php7.3-fpm-alpine
+    networks:
+      - frontend
+      - backend
+    restart: always
+
   nginx:
     build:
       context: ./requirements/nginx
@@ -57,13 +46,18 @@ services:
       - html:/var/www/html
     env_file:
       - ".env"
-      # - type: volume
-      #   source: /home/odroz-ba/data/html
-      #   rarget: /var/www/html
+    depends_on:
+      - wordpress
     ports:
       - 443:443
-      # - 8080:80
-    # image: nginx:alpine
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
 
 volumes:
   html:

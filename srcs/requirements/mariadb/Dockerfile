@@ -8,6 +8,9 @@ RUN apt update -y \
 RUN sed -i 's/bind-address/bind-address = 0.0.0.0 #/i' /etc/mysql/mariadb.conf.d/50-server.cnf
 COPY tools/install.sh ./
 COPY tools/script.sql /tmp/
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASS
 #ajout de commande sed pour remplacer les variables
 
 RUN bash install.sh
