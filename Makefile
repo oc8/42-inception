@@ -52,7 +52,7 @@ clean:
 	docker images prune
 
 fclean: clean
-	docker volume rm $$(docker volume ls -q)
+	sudo docker volume rm $$(docker volume ls -q)
 	sudo rm -rf /home/odroz-ba/data
 	docker network prune --force
 	docker rmi inception_nginx inception_mariadb inception_wordpress
@@ -84,7 +84,12 @@ test:
 	docker run -ti --rm --name test image_test bash
 
 emptycache:
-	sudo docker system prune -a
+# sudo docker system prune -a
+	docker stop $(docker ps -qa);
+	docker rm $(docker ps -qa);
+	docker rmi -f $(docker images -qa);
+	docker volume rm $(docker volume ls -q);
+	docker network rm $(docker network ls -q) 2>/dev/null
 
 .PHONY: 	all build clean fclean re emptycache nt mt wt test status log $(NAME)
 # .SILENT:	clean fclean all re $(NAME) build emptycache
